@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const sampleEvents = [
   {
@@ -61,87 +64,108 @@ const EventsList = () => {
 
     return matchesSearch && matchesType && matchesDate;
   });
-
+ console.log(motion)
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
-          Explore Events
-        </h1>
-
-        {/* Filters Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-          {/* Search Input */}
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by event name or location"
-            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          {/* Date Picker */}
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            min={today}
-            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          {/* Event Type Dropdown */}
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gray-100 p-6">
+        <div className="max-w-6xl mx-auto">
+          {/* Page Title with Animation */}
+          <motion.h1
+            className="text-4xl font-bold text-center mb-8 text-gray-800"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <option value="All">All Types</option>
-            <option value="Wedding">Wedding</option>
-            <option value="Music">Music</option>
-            <option value="Business">Business</option>
-            <option value="Technology">Technology</option>
-            <option value="Food">Food</option>
-          </select>
-        </div>
+            Explore Events
+          </motion.h1>
 
-        {/* Events List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-              >
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-40 object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="text-lg font-bold text-gray-800 mb-2">
-                    {event.title}
-                  </h2>
-                  <p className="text-gray-600 text-sm">
-                    📅 {event.date} | 📍 {event.location}
-                  </p>
-                  <p className="text-gray-600 text-sm">🎫 Type: {event.type}</p>
-                  <button
-                    onClick={() => alert(`Booking ${event.title}`)}
-                    className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-2 rounded-lg shadow hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-500">
-              No events found. Try adjusting the filters.
-            </p>
-          )}
+          {/* Filters Section */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+            <motion.input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by event name or location"
+              className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            />
+
+            <motion.input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              min={today}
+              className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+            />
+
+            <motion.select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <option value="All">All Types</option>
+              <option value="Wedding">Wedding</option>
+              <option value="Music">Music</option>
+              <option value="Business">Business</option>
+              <option value="Technology">Technology</option>
+              <option value="Food">Food</option>
+            </motion.select>
+          </div>
+
+          {/* Events List */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map((event) => (
+                <motion.div
+                  key={event.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-40 object-cover"
+                  />
+                  <div className="p-4">
+                    <h2 className="text-lg font-bold text-gray-800 mb-2">
+                      {event.title}
+                    </h2>
+                    <p className="text-gray-600 text-sm">
+                      📅 {event.date} | 📍 {event.location}
+                    </p>
+                    <p className="text-gray-600 text-sm">🎫 Type: {event.type}</p>
+                    <motion.button
+                      onClick={() => alert(`Booking ${event.title}`)}
+                      className="mt-4 w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-2 rounded-lg shadow hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Book Now
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <p className="text-center text-gray-500">
+                No events found. Try adjusting the filters.
+              </p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

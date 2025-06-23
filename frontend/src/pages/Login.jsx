@@ -1,74 +1,59 @@
-import { useState } from 'react';
-import {
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
-import { auth } from '../../firebase.js';
-import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext.jsx";
+import Navbar from "../components/Navbar.jsx";
+import Footer from "../components/Footer.jsx";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { login } = useUser();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
+  const [resetEmail, setResetEmail] = useState("");
   const [showResetModal, setShowResetModal] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      toast.warning('Please fill in all fields.');
+      toast.warning("Please fill in all fields.");
       return;
     }
 
     setLoading(true);
 
     try {
-      // Step 1: Authenticate with Firebase
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('User logged in:', userCredential.user);
-      // Step 2: Fetch user details (including role) from backend using email
-      const response = await fetch(`http://localhost:5000/api/users/${encodeURIComponent(email)}`, {
-        method: 'GET',
+      const response = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch user details from backend.');
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Login failed.");
       }
 
       const userData = await response.json();
+      console.log("User data received:", userData);
 
-      // Extract role from fetched user data
-      const { role } = userData;
+      const { user: { role, username } = {} } = userData;
+      if (!role) throw new Error("No role defined for this user.");
 
-      toast.success('Login successful!');
+      login({ email, role, name: username });
 
-      // Step 3: Navigate based on role
-      if (role === 'Organizer') {
-        navigate('/organizer-dashboard');
-      } else if (role === 'Attendee') {
-        navigate('/attendee-dashboard');
-      } else if (role === 'Admin') {
-        navigate('/admin-dashboard');
-      } else {
-        toast.error('Unknown role. Please contact support.');
-      }
+      if (role === "Organizer") navigate("/organizer-dashboard");
+      else if (role === "Attendee") navigate("/attendee-dashboard");
+      else if (role === "Admin") navigate("/admin-dashboard");
+      else throw new Error("Unknown role.");
     } catch (error) {
-      // Handle Firebase auth errors
-      if (error.code === 'auth/user-not-found') {
-        toast.error('No user found with this email.');
-      } else if (error.code === 'auth/wrong-password') {
-        toast.error('Incorrect password.');
-      } else {
-        toast.error(error.message || 'Login failed. Please try again.');
-      }
+      toast.error(error.message || "Login failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -76,21 +61,35 @@ const Login = () => {
 
   const handlePasswordReset = async () => {
     if (!resetEmail) {
-      toast.warning('Please enter your email.');
+      toast.warning("Please enter your email.");
       return;
     }
 
     try {
-      await sendPasswordResetEmail(auth, resetEmail);
-      toast.success('Password reset email sent. Check your inbox!');
+      const response = await fetch("http://localhost:5000/api/users/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to send reset email.");
+      }
+
+      toast.success("Password reset email sent. Check your inbox!");
       setShowResetModal(false);
     } catch (error) {
-      console.error('Error sending password reset email:', error);
-      toast.error('Failed to send reset email. Please try again.');
+      console.error("Error sending password reset email:", error);
+      toast.error(error.message || "Failed to send reset email.");
     }
   };
 
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 sm:px-6 lg:px-8">
       <ToastContainer position="top-center" autoClose={2000} />
 
@@ -113,7 +112,7 @@ const Login = () => {
         <div className="relative mb-4">
           <input
             className="border p-3 w-full pr-20 rounded text-sm sm:text-base"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
@@ -123,7 +122,7 @@ const Login = () => {
             onClick={() => setShowPassword((prev) => !prev)}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm sm:text-base text-blue-600 focus:outline-none"
           >
-            {showPassword ? 'Hide' : 'Show'}
+            {showPassword ? "Hide" : "Show"}
           </button>
         </div>
 
@@ -132,7 +131,7 @@ const Login = () => {
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full disabled:opacity-50 text-sm sm:text-base"
           disabled={loading}
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <div className="flex justify-between mt-4">
@@ -145,7 +144,7 @@ const Login = () => {
           </button>
           <button
             type="button"
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate("/signup")}
             className="text-cyan-600 font-medium hover:underline text-sm sm:text-base"
           >
             Sign Up
@@ -156,7 +155,9 @@ const Login = () => {
       {showResetModal && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
           <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg max-w-sm w-full">
-            <h3 className="text-xl sm:text-2xl font-bold mb-4 text-blue-600">Reset Password</h3>
+            <h3 className="text-xl sm:text-2xl font-bold mb-4 text-blue-600">
+              Reset Password
+            </h3>
             <input
               className="border p-3 w-full mb-4 rounded text-sm sm:text-base"
               type="email"
@@ -182,7 +183,9 @@ const Login = () => {
         </div>
       )}
     </div>
+    <Footer />
+    </>
   );
 };
 
-export default Login;
+export default Login; 
