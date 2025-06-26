@@ -10,6 +10,7 @@ const organizerRoutes = require('./routes/organizerRoutes.js');
 const Notification = require('./models/Notifications.js');
 const notificationRoutes = require('./routes/notificationRoutes.js');
 const bookingRoutes = require('./routes/bookingRoutes.js');
+const eventRoutes = require('./routes/eventRoutes.js');
 dotenv.config();
 
 const app = express();
@@ -120,6 +121,7 @@ app.use('/api/venues', venueRoutes);
 app.use('/api/organizers', organizerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/events', eventRoutes);
 // Root Route
 app.get('/', (req, res) => {
   res.send('Welcome to the User and Venue Management API');

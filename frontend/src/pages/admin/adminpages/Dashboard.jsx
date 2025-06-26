@@ -6,6 +6,7 @@ const Dashboard = () => {
   const [venues, setVenues] = useState([]);
   const [organizers, setOrganizers] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [events, setEvents] = useState([]);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -58,6 +59,19 @@ const Dashboard = () => {
     fetchBookings();
   }, []);
 
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/events');
+        setEvents(response.data);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   const renderTable = (headers, rows, rowKey, dataKey) => (
     <div className="overflow-hidden">
       <table className="table-auto w-full border-collapse border border-gray-300 text-sm md:text-base">
@@ -101,6 +115,15 @@ const Dashboard = () => {
   return (
     <div className="p-4 sm:p-6">
       <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 text-gray-800">
+        Event Details
+      </h1>
+      {renderTable(
+        ['Event Name', 'Date', 'Arrangements', 'Start Time', 'End Time', 'Seats', 'Booked Seats', 'Timestamp'],
+        events,
+        '_id',
+        ['name', 'date', 'arrangements', 'startTime', 'endTime', 'seats', 'bookedSeats', 'createdAt']
+      )}
+      <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 mt-8 text-gray-800">
         Attendee Details
       </h1>
       {renderTable(
@@ -109,7 +132,15 @@ const Dashboard = () => {
         '_id',
         ['username', 'email', 'role', 'createdAt']
       )}
-
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold mt-8 mb-4 text-gray-800">
+        Booking Details
+      </h1>
+      {renderTable(
+        ['Name', 'Phone', 'Category', 'Event Date', 'Payment Method', 'Timestamp'],
+        bookings,
+        '_id',
+        ['name', 'phone', 'category', 'eventDate', 'paymentMethod', 'createdAt']
+      )}
       <h1 className="text-lg sm:text-xl md:text-2xl font-bold mt-8 mb-4 text-gray-800">
         Venue Details
       </h1>
@@ -129,16 +160,6 @@ const Dashboard = () => {
         '_id',
         ['name', 'organization', 'email', 'createdAt']
       )}
-      <h1 className="text-lg sm:text-xl md:text-2xl font-bold mt-8 mb-4 text-gray-800">
-        Booking Details
-      </h1>
-      {renderTable(
-        ['Name', 'Phone', 'Category', 'Event Date', 'Payment Method', 'Timestamp'],
-        bookings,
-        '_id',
-        ['name', 'phone', 'category', 'eventDate', 'paymentMethod', 'createdAt']
-      )}
-       
     </div>
   );
 };

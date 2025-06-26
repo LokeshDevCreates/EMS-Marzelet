@@ -6,11 +6,10 @@ const Navbar = () => {
   const { user, logout } = useUser();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for the logout confirmation modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Events", path: "/events-list" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -24,52 +23,47 @@ const Navbar = () => {
     ? [
         {
           name: "Logout",
-          action: () => setIsModalOpen(true), // Open the confirmation modal
-          style: "text-lg bg-transparent text-white px-4 font-semibold hover:text-gray-200 transition md:bg-white md:text-purple-600 md:hover:bg-purple-300 md:hover:text-white rounded-full md:px-6 md:py-2",
+          action: () => setIsModalOpen(true),
+          style: "text-lg text-white bg-transparent px-4 font-semibold hover:text-[#00ABE4] transition md:bg-[#00ABE4] md:text-white md:hover:bg-[#E9F1FA] md:hover:text-[#00ABE4] rounded-full md:px-6 md:py-2",
         },
         {
           name: "Dashboard",
           action: () => {
-            if (user?.role === "Admin") {
-              navigate("/admin-dashboard");
-            } else if (user?.role === "Organizer") {
-              navigate("/organizer-dashboard");
-            } else if (user?.role === "Attendee") {
-              navigate("/attendee-dashboard");
-            } else {
-              navigate("/login");
-            }
+            if (user?.role === "Admin") navigate("/admin-dashboard");
+            else if (user?.role === "Organizer") navigate("/organizer-dashboard");
+            else if (user?.role === "Attendee") navigate("/attendee-dashboard");
+            else navigate("/login");
           },
-          style: "text-lg bg-transparent text-white px-4 font-semibold hover:text-gray-200 transition md:bg-purple-600 text-white md:hover:bg-purple-700 rounded-full md:px-6 md:py-2",
+          style: "text-lg text-white bg-transparent px-4 font-semibold hover:text-[#00ABE4] transition md:bg-[#00ABE4] md:text-white md:hover:bg-[#E9F1FA] md:hover:text-[#00ABE4] rounded-full md:px-6 md:py-2",
         },
       ]
     : [
         {
           name: "Login",
           path: "/login",
-          style: "text-lg bg-transparent text-white px-4 font-semibold hover:text-gray-200 transition md:bg-white md:text-purple-600 md:hover:bg-purple-300 md:hover:text-white rounded-full md:px-6 md:py-2",
+          style: "text-lg text-white bg-transparent px-4 font-semibold hover:text-[#00ABE4] transition md:bg-[#00ABE4] md:text-white md:hover:bg-[#E9F1FA] md:hover:text-[#00ABE4] rounded-full md:px-6 md:py-2",
         },
         {
           name: "Sign Up",
           path: "/signup",
-          style: "text-lg bg-transparent text-white px-4 font-semibold hover:text-gray-200 transition md:bg-purple-600 text-white md:hover:bg-purple-700 rounded-full md:px-6 md:py-2",
+          style: "text-lg text-white bg-transparent px-4 font-semibold hover:text-[#00ABE4] transition md:bg-[#00ABE4] md:text-white md:hover:bg-[#E9F1FA] md:hover:text-[#00ABE4] rounded-full md:px-6 md:py-2",
         },
       ];
 
   return (
-    <header className="bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md">
+    <header className="bg-[#E9F1FA] shadow-md">
       <div className="container mx-auto flex justify-between items-center py-6 px-4 md:px-8">
         {/* Logo */}
         <h1
           onClick={() => navigate("/")}
-          className="text-2xl md:text-3xl font-bold cursor-pointer hover:text-gray-200 transition"
+          className="text-3xl font-extrabold text-[#00ABE4] cursor-pointer tracking-wide"
         >
-          Event Booking Management
+          Evento
         </h1>
 
         {/* Menu Button */}
         <button
-          className="text-2xl md:hidden text-white hover:text-gray-300 focus:outline-none"
+          className="text-2xl md:hidden text-[#00ABE4] hover:text-[#E9F1FA] focus:outline-none"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? "✖" : "☰"}
@@ -81,7 +75,7 @@ const Navbar = () => {
             <button
               key={link.name}
               onClick={() => navigate(link.path)}
-              className="text-lg font-medium hover:text-gray-300 transition"
+              className="text-lg font-medium text-[#00ABE4] hover:text-[#E9F1FA] transition"
             >
               {link.name}
             </button>
@@ -106,7 +100,7 @@ const Navbar = () => {
 
       {/* Navigation Links (Mobile) */}
       {menuOpen && (
-        <nav className="md:hidden bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2">
+        <nav className="md:hidden bg-[#E9F1FA] px-4 py-2">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <button
@@ -115,7 +109,7 @@ const Navbar = () => {
                   navigate(link.path);
                   setMenuOpen(false);
                 }}
-                className="text-lg font-medium hover:text-gray-300 transition"
+                className="text-lg font-medium text-[#00ABE4] hover:text-[#E9F1FA] transition"
               >
                 {link.name}
               </button>
@@ -137,7 +131,7 @@ const Navbar = () => {
                     action.action();
                     setMenuOpen(false);
                   }}
-                  className={`text-lg font-medium hover:text-gray-300 transition`}
+                  className={`text-lg font-medium text-[#00ABE4] hover:text-[#E9F1FA] transition`}
                 >
                   {action.name}
                 </button>
@@ -146,6 +140,7 @@ const Navbar = () => {
           </div>
         </nav>
       )}
+
       {/* Logout Confirmation Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

@@ -11,8 +11,6 @@ import { auth } from "../../firebase.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../context/AuthContext.jsx"; 
-import Navbar from "../components/Navbar.jsx";// Adjust the path if needed
-import Footer from "../components/Footer.jsx"; // Adjust the path if needed
 const Signup = () => {
   const navigate = useNavigate();
 
@@ -181,8 +179,7 @@ const Signup = () => {
 
   return (
     <>
-    <Navbar />
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <ToastContainer position="top-center" autoClose={2000} />
       <form
         onSubmit={handleSignup}
@@ -314,7 +311,6 @@ const Signup = () => {
         </div>
       )}
     </div>
-    <Footer />
     </>
   );
 };

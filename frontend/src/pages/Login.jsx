@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext.jsx";
-import Navbar from "../components/Navbar.jsx";
-import Footer from "../components/Footer.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -89,8 +87,7 @@ const Login = () => {
 
   return (
     <>
-    <Navbar />
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 sm:px-6 lg:px-8">
       <ToastContainer position="top-center" autoClose={2000} />
 
       <form
@@ -183,7 +180,6 @@ const Login = () => {
         </div>
       )}
     </div>
-    <Footer />
     </>
   );
 };

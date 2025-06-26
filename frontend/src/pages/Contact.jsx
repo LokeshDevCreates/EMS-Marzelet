@@ -46,7 +46,7 @@ const Contact = () => {
 
     const customIcon = L.divIcon({
       className: "custom-marker",
-      html: '<div style="background: #FF5733; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+      html: '<div style="background: #00ABE4; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
       iconSize: [20, 20],
       iconAnchor: [10, 10],
     });
@@ -57,8 +57,8 @@ const Contact = () => {
       .openPopup();
 
     L.circle(initialCoordinates, {
-      color: "orange",
-      fillColor: "#FF9D23",
+      color: "#00ABE4",
+      fillColor: "#E9F1FA",
       fillOpacity: 0.5,
       radius: 100,
     }).addTo(map);
@@ -77,7 +77,7 @@ const Contact = () => {
     <>
       <ToastContainer position="top-center" autoClose={3000} />
       <Navbar />
-      <div className="min-h-screen flex flex-col bg-gray-100">
+      <div className="min-h-screen flex flex-col bg-[#E9F1FA]">
         {/* Map and Info Section */}
         <div className="flex flex-col lg:flex-row w-full">
           {/* Map Section */}
@@ -94,7 +94,7 @@ const Contact = () => {
 
           {/* Contact Info & Form Section */}
           <motion.div
-            className="w-full lg:w-1/3 bg-gradient-to-b from-blue-500 to-purple-500 text-white p-6 lg:p-10 flex flex-col justify-between"
+            className="w-full lg:w-1/3 bg-[#00ABE4] text-white p-6 lg:p-10 flex flex-col justify-between"
             initial="hidden"
             whileInView="visible"
             variants={animationVariants}
@@ -158,7 +158,7 @@ const Contact = () => {
                 ></textarea>
                 <button
                   type="submit"
-                  className="w-full bg-orange-500 hover:bg-orange-400 text-white py-2 rounded-lg"
+                  className="w-full bg-[#E9F1FA] hover:bg-[#00ABE4] text-black py-2 rounded-lg"
                 >
                   Send
                 </button>

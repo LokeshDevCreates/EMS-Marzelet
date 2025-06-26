@@ -4,7 +4,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VerifyEmail from "./pages/VerifyEmail";
-import EventsList from "./pages/EventsList";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import OrganizerDashboard from "./pages/organizer/OrganizerDashboard";
@@ -17,7 +16,7 @@ import Settings from "./pages/admin/adminpages/Settings";
 import Dashboard from "./pages/admin/adminpages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./pages/Unauthorized";
-
+import EventDetails from "./pages/EventDetails";
 const App = () => {
   return (
     <UserProvider>
@@ -28,9 +27,11 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/events-list" element={<EventsList />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+
+ 
+          <Route path="/events/:eventId" element={<EventDetails />} /> 
           {/* Organizer Dashboard */}
           <Route
             path="/organizer-dashboard"
