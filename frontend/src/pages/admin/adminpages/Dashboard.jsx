@@ -3,7 +3,6 @@ import axios from 'axios';
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
-  const [venues, setVenues] = useState([]);
   const [organizers, setOrganizers] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [events, setEvents] = useState([]);
@@ -18,19 +17,6 @@ const Dashboard = () => {
     };
 
     fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    const fetchVenues = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/venues');
-        setVenues(response.data);
-      } catch (error) {
-        console.error('Error fetching venues:', error);
-      }
-    };
-
-    fetchVenues();
   }, []);
 
   useEffect(() => {
@@ -140,15 +126,6 @@ const Dashboard = () => {
         bookings,
         '_id',
         ['name', 'phone', 'category', 'eventDate', 'paymentMethod', 'createdAt']
-      )}
-      <h1 className="text-lg sm:text-xl md:text-2xl font-bold mt-8 mb-4 text-gray-800">
-        Venue Details
-      </h1>
-      {renderTable(
-        ['Venue Name', 'Location', 'Capacity', 'Amenities', 'Timestamp'],
-        venues,
-        '_id',
-        ['name', 'location', 'capacity', 'amenities', 'createdAt']
       )}
 
       <h1 className="text-lg sm:text-xl md:text-2xl font-bold mt-8 mb-4 text-gray-800">

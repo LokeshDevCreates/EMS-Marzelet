@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  venueId: { type: mongoose.Schema.Types.ObjectId, ref: 'Venue', required: true },
   organizerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Organizer', required: true },
   organizerName: { type: String, required: true },
   organizerEmail: { type: String, required: true, match: /.+\@.+\..+/ },
@@ -31,7 +30,7 @@ const eventSchema = new mongoose.Schema({
   eventType: {
     type: [String],
     required: true,
-    enum: ['Conference', 'Workshop', 'Seminar', 'Wedding','Family', 'Party', 'Concert', 'Exhibition','Trending','Hot','Mostbooked', 'Other'],
+    enum: ['Conference', 'Workshop', 'Seminar', 'Sports', 'Party', 'Concert', 'Exhibition','Trending','Hot','Mostbooked', 'Other'],
     default: ['Other']
   },
   eventImages: [{
@@ -47,3 +46,7 @@ const eventSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 module.exports = mongoose.model('Event', eventSchema);
+
+
+
+

@@ -1,9 +1,9 @@
 const Event = require('../models/Events.js');
 
 // Helper to check overlapping events, with optional exclusion of current event
-const hasOverlap = async (venueId, date, startTime, endTime, excludeId = null) => {
+const hasOverlap = async (location,date, startTime, endTime, excludeId = null) => {
   const query = {
-    venueId,
+    location,
     date,
     $or: [
       {
@@ -25,24 +25,23 @@ const hasOverlap = async (venueId, date, startTime, endTime, excludeId = null) =
 exports.createEvent = async (req, res) => {
   try {
     const {
-      name, venueId, organizerId, organizerName, organizerEmail, organizerPhone, date,
+      name, organizerId, organizerName, organizerEmail, organizerPhone, date,
       startTime, endTime, description,
       arrangements, foodItems, seats,
       eventImages, eventType, offer, location, price
     } = req.body;
 
-    if (!name || !venueId || !organizerId || !date || !startTime || !endTime || seats < 0 || !Array.isArray(eventImages) || eventImages.length === 0 || !location || price < 0) {
+    if (!name || !organizerId || !date || !startTime || !endTime || seats < 0 || !Array.isArray(eventImages) || eventImages.length === 0 || !location || price < 0) {
       return res.status(400).json({ message: 'Missing or invalid fields' });
     }
 
-    const overlap = await hasOverlap(venueId, date, startTime, endTime);
+    const overlap = await hasOverlap(location,date, startTime, endTime);
     if (overlap) {
       return res.status(409).json({ message: 'Event time overlaps with an existing event at this venue' });
     }
    const parsedLocation = typeof location === 'string' ? JSON.parse(location) : location;
     const newEvent = new Event({
       name,
-      venueId,
       organizerId,
       organizerName,
       organizerEmail,
@@ -77,9 +76,8 @@ exports.createEvent = async (req, res) => {
 // Get all events (with optional filters)
 exports.getAllEvents = async (req, res) => {
   try {
-    const { venueId, date } = req.query;
+    const { date } = req.query;
     const filter = {};
-    if (venueId) filter.venueId = venueId;
     if (date) filter.date = date;
 
     const events = await Event.find(filter);
@@ -104,23 +102,23 @@ exports.getEventById = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const {
-      name, venueId, organizerId, organizerName, organizerEmail, organizerPhone, date,
+      name,organizerId, organizerName, organizerEmail, organizerPhone, date,
       startTime, endTime, description, eventType,
       arrangements, foodItems, seats, eventImages, location, price, offer
     } = req.body;
 
-    if (!name || !venueId || !organizerId || !date || !startTime || !endTime || seats < 0 || !Array.isArray(eventImages) || eventImages.length === 0 || !location || price < 0) {
+    if (!name || !organizerId || !date || !startTime || !endTime || seats < 0 || !Array.isArray(eventImages) || eventImages.length === 0 || !location || price < 0) {
       return res.status(400).json({ message: 'Missing or invalid fields' });
     }
 
     // Prevent false overlap check on the event itself
-    const overlap = await hasOverlap(venueId, date, startTime, endTime, req.params.id);
+    const overlap = await hasOverlap(location, date, startTime, endTime, req.params.id);
     if (overlap) {
       return res.status(409).json({ message: 'Event time overlaps with an existing event at this venue' });
     }
 
     const updated = await Event.findByIdAndUpdate(req.params.id, {
-      name, venueId, organizerId, organizerName, organizerEmail, organizerPhone, date, startTime, eventType,
+      name, organizerId, organizerName, organizerEmail, organizerPhone, date, startTime, eventType,
       endTime, description, arrangements, foodItems, seats, eventImages, location, price, offer
     }, { new: true });
 
@@ -142,5 +140,23 @@ exports.deleteEvent = async (req, res) => {
     res.json({ message: 'Event deleted successfully', deletedEvent });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting event', error });
+  }
+};
+
+// Get events created by a specific organizer
+exports.getEventsByOrganizer = async (req, res) => {
+  try {
+    const { organizerId } = req.params;
+
+    if (!organizerId) {
+      return res.status(400).json({ message: "Organizer ID is required" });
+    }
+
+    const events = await Event.find({ organizerId });
+
+    res.status(200).json({ events });
+  } catch (error) {
+    console.error("Error fetching organizer events:", error);
+    res.status(500).json({ message: "Server error", error });
   }
 };

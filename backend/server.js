@@ -5,12 +5,14 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const userRoutes = require('./routes/userRoutes.js');
-const venueRoutes = require('./routes/venueRoutes.js');
-const organizerRoutes = require('./routes/organizerRoutes.js');
+const organizerRoutes = require('./routes/organizerRoutes/organizerRoutes.js');
 const Notification = require('./models/Notifications.js');
 const notificationRoutes = require('./routes/notificationRoutes.js');
 const bookingRoutes = require('./routes/bookingRoutes.js');
 const eventRoutes = require('./routes/eventRoutes.js');
+const paymentRoutes= require('./routes/paymentRoutes.js')
+const mapRoutes=require('./routes/mapRoutes.js')
+const bankRoutes=require('./routes/bankDetailsRoutes.js')
 dotenv.config();
 
 const app = express();
@@ -42,6 +44,16 @@ if (!process.env.MONGODB_URI) {
     process.exit(1);
   }
 })();
+const crypto = require("crypto");
+
+const razorpay_order_id = "order_Qo6U7rC3GHbwIp"; // from step 3
+const razorpay_payment_id = "pay_TEST123456789";  // any fake ID for test
+const key_secret = "rIpnr3tnasH8Zq31jYU4GKvx";    // from .env
+
+const signature = crypto
+  .createHmac("sha256", key_secret)
+  .update(razorpay_order_id + "|" + razorpay_payment_id)
+  .digest("hex");
 
 // Real-time Notification Functionality
 const startNotificationStream = () => {
@@ -117,11 +129,15 @@ startNotificationStream();
 
 // Routes
 app.use('/api/users', userRoutes);
-app.use('/api/venues', venueRoutes);
 app.use('/api/organizers', organizerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/maps',mapRoutes)
+app.use('/uploads', express.static('uploads'));
+
+app.use('/api/payments', paymentRoutes);
+app.use('/api/bank-details',bankRoutes)
 // Root Route
 app.get('/', (req, res) => {
   res.send('Welcome to the User and Venue Management API');

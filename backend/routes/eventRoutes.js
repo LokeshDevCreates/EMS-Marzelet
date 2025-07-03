@@ -9,16 +9,17 @@ const {
   getAllEvents,
   getEventById,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  getEventsByOrganizer
 } = require('../controllers/eventController.js');
-
-router.post('/', createEvent);       //  post /api/events
+const checkBankDetails = require("../middleware/checkBankDetails.js")
+router.post('/',createEvent);       //  post /api/events
 
 router.get('/', getAllEvents);       //  get /api/events
 router.get('/:id', getEventById);
 router.put('/:id', updateEvent);
 router.delete('/:id', deleteEvent);
-
+router.get("/organizer/:organizerId", getEventsByOrganizer);
 
 
 module.exports = router;

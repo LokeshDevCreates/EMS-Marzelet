@@ -52,7 +52,7 @@ const Signup = () => {
     if (role === "Organizer") {
       navigate("/organizer-dashboard");
     } else if (role === "Attendee") {
-      navigate("/attendee-dashboard");
+      navigate("/");
     } else {
       toast.error("Unknown role. Please contact support.");
     }
