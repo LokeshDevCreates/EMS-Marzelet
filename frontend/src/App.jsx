@@ -22,6 +22,7 @@ import BookingViewer from "./pages/organizer/organizerPages/BookingViewer";
 import OrganizerProfile from "./pages/organizer/organizerPages/OrganzierProfile";
 import ShowEvents from "./pages/organizer/organizerPages/ShowEvents";
 import CheckOrganizerStatus from "./pages/organizer/organizerPages/CheckOrganizerStatus";
+import CheckAttendeeStatus from "./pages/CheckAttendeeStatus"
 import OrganizerSettings from "./pages/organizer/organizerPages/OrganizerSettings"
 // Attendee Dashboard
 import AttendeeDashboard from "./pages/attendee/AttendeeDashboard";
@@ -33,12 +34,13 @@ import Events from "./pages/admin/adminpages/Events";
 import Organizers from "./pages/admin/adminpages/Organizers";
 import Notifications from "./pages/admin/adminpages/Notifications";
 import Settings from "./pages/admin/adminpages/Settings";
-
+import AttendeeForm from "./pages/AttendeeForm"
 // Utility Pages
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./pages/Unauthorized";
 import OrganizerBankDetails from "./pages/organizer/organizerPages/OrganizerBankDetails";
 import BookingSuccess from "./pages/BookingSucces";
+import Profile from "./pages/Profile";
 
 const App = () => {
   return (
@@ -51,11 +53,14 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/about" element={<About />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/bank" element={<Bank />} />
           <Route path="/events/:eventId" element={<EventDetails />} />
+          <Route path="/attendee-check" element={<CheckAttendeeStatus />} />
+          <Route path="/attendee-form" element={<AttendeeForm />} />
           <Route path="/organizer-check" element={<CheckOrganizerStatus />} />
           <Route path="/organizer-form" element={<OrganizerForm />} />
 

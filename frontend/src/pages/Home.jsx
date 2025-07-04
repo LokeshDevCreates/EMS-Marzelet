@@ -1,11 +1,12 @@
 // Home.jsx
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUser } from "../context/UserContext";
 import Events from "../components/Events";
 import Footer from "../components/Footer";
 import Login from "./Login";
 import Signup from "./Signup";
+import { User } from "lucide-react";
 
 const Home = () => {
   const { user, logout } = useUser();
@@ -15,6 +16,8 @@ const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const storedLocation = localStorage.getItem("location");
@@ -42,33 +45,88 @@ const Home = () => {
     localStorage.setItem("location", location);
   }, [location]);
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
+  const attendeeDropdown = {
+    element: (
+      <div className="relative" ref={dropdownRef}>
+       <button
+          className="w-10 h-10 rounded-full overflow-hidden focus:outline-none"
+          onClick={() => setShowDropdown((prev) => !prev)}
+        >
+          <User />
+        </button>
+
+        {showDropdown && (
+          <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50">
+            <button
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+              onClick={() => {
+                navigate("/profile");
+                setShowDropdown(false);
+              }}
+            >
+              View Profile
+            </button>
+            <button
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+              onClick={() => {
+                navigate("/contact");
+                setShowDropdown(false);
+              }}
+            >
+              Contact
+            </button>
+            <button
+              className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+              onClick={() => {
+                setIsModalOpen(true); 
+                setShowDropdown(false);
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        )}
+      </div>
+    ),
+  };
+
   const authActions = user
-    ? [
-        {
-          name: "Logout",
-          action: () => setIsModalOpen(true),
-          style:
-            "text-lg bg-transparent text-red-600 px-4 font-medium hover:underline",
-        },
-        ...(user.role !== "Attendee"
-          ? [
-              {
-                name: "Dashboard",
-                action: () => {
-                  if (user?.role === "Admin") navigate("/admin-dashboard");
-                  else if (user?.role === "Organizer") navigate("/organizer-dashboard");
-                },
-                style:
-                  "text-lg bg-transparent text-blue-600 px-4 font-medium hover:underline",
-              },
-            ]
-          : []),
-      ]
+    ? user.role === "Attendee"
+      ? [attendeeDropdown]
+      : [
+          {
+            name: "Logout",
+            action: () => setIsModalOpen(true),
+            style:
+              "text-lg bg-transparent text-red-600 px-4 font-medium hover:underline",
+          },
+          {
+            name: "Dashboard",
+            action: () => {
+              if (user?.role === "Admin") navigate("/admin-dashboard");
+              else if (user?.role === "Organizer") navigate("/organizer-dashboard");
+            },
+            style:
+              "text-lg bg-transparent text-blue-600 px-4 font-medium hover:underline",
+          },
+        ]
     : [
         {
           name: "Login",

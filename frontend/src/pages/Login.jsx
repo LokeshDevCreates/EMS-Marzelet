@@ -52,7 +52,8 @@ const Login = () => {
         localStorage.setItem("organizerEmail", user.email); // ✅ Use server-returned email
         navigate("/organizer-check"); // ✅ This will route to /organizer-form or /organizer-dashboard
       } else if (user.role === "Attendee") {
-        navigate("/");
+        localStorage.setItem("attendeeEmail",user.email)
+        navigate("/attendee-check");
         window.location.reload();
         toast.success("You have been Logged in Successfully")
       } else if (user.role === "Admin") {

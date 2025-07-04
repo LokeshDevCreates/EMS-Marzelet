@@ -82,7 +82,7 @@ const Navbar = () => {
           ))}
         </nav>
 
-        {/* User Actions (Desktop) */}
+        {/* User Actions (Desktop)
         <div className="hidden md:flex gap-4 items-center">
           {authActions.map((action, index) =>
             action.path ? (
@@ -95,7 +95,7 @@ const Navbar = () => {
               </button>
             )
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Navigation Links (Mobile) */}

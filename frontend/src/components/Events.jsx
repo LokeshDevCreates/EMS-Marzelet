@@ -105,11 +105,15 @@ const Events = ({ location,authActions, isMenuOpen, setIsMenuOpen }) => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            {authActions.map((action, index) => (
+            {authActions.map((action, index) =>
+            typeof action === "object" && action.element ? (
+              <div key={index}>{action.element}</div> // Render JSX directly
+            ) : (
               <button key={index} onClick={action.action} className={action.style}>
                 {action.name}
               </button>
-            ))}
+            )
+          )}
           </div>
         </div>
 

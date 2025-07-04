@@ -13,6 +13,7 @@ const eventRoutes = require('./routes/eventRoutes.js');
 const paymentRoutes= require('./routes/paymentRoutes.js')
 const mapRoutes=require('./routes/mapRoutes.js')
 const bankRoutes=require('./routes/bankDetailsRoutes.js')
+const attendeeRoutes=require('./routes/attendeeRoutes.js')
 dotenv.config();
 
 const app = express();
@@ -138,6 +139,7 @@ app.use('/uploads', express.static('uploads'));
 
 app.use('/api/payments', paymentRoutes);
 app.use('/api/bank-details',bankRoutes)
+app.use('/api/attendees', attendeeRoutes);
 // Root Route
 app.get('/', (req, res) => {
   res.send('Welcome to the User and Venue Management API');
