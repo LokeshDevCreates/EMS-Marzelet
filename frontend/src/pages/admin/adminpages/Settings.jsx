@@ -13,7 +13,6 @@ const Settings = () => {
     signOut(auth)
       .then(() => {
         logout(); // Clear user state in context
-        navigate("/login"); // Redirect to login page
       })
       .catch((error) => {
         console.error("Logout error:", error);
@@ -25,7 +24,7 @@ const Settings = () => {
 
   if (!user) {
     // Redirect if not logged in
-    navigate("/login");
+    navigate("/");
     return null;
   }
 

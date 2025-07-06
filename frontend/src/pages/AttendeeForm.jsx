@@ -60,7 +60,7 @@ const AttendeeForm = () => {
 
       toast.success('Registration successful!');
       reset();
-      setTimeout(() => navigate('/profile'), 1000);
+      setTimeout(() => navigate('/'), 1000);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed.');
     }

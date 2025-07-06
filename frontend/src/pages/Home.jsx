@@ -18,6 +18,20 @@ const Home = () => {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+      const handleViewProfile = () => {
+      setShowDropdown(false);
+      navigate("/profile");
+    };
+
+    const handleContact = () => {
+      setShowDropdown(false);
+      navigate("/contact");
+    };
+
+    const handleLogoutModal = () => {
+      setShowDropdown(false);
+      setIsModalOpen(true);
+    };
 
   useEffect(() => {
     const storedLocation = localStorage.getItem("location");
@@ -35,7 +49,7 @@ const Home = () => {
         },
         (error) => {
           console.error("Error getting location:", error);
-          setLocation("Salem");
+          setLocation("Your Location");
         }
       );
     }
@@ -64,46 +78,36 @@ const Home = () => {
 
   const attendeeDropdown = {
     element: (
-      <div className="relative" ref={dropdownRef}>
-       <button
-          className="w-10 h-10 rounded-full overflow-hidden focus:outline-none"
-          onClick={() => setShowDropdown((prev) => !prev)}
-        >
-          <User />
-        </button>
-
-        {showDropdown && (
-          <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50">
-            <button
-              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-              onClick={() => {
-                navigate("/profile");
-                setShowDropdown(false);
-              }}
-            >
-              View Profile
-            </button>
-            <button
-              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-              onClick={() => {
-                navigate("/contact");
-                setShowDropdown(false);
-              }}
-            >
-              Contact
-            </button>
-            <button
-              className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-              onClick={() => {
-                setIsModalOpen(true); 
-                setShowDropdown(false);
-              }}
-            >
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
+      <div className="relative hidden md:block" ref={dropdownRef}>
+          <button
+            className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center"
+            onClick={() => setShowDropdown((prev) => !prev)}
+          >
+            <User className="w-6 h-6 text-gray-800" />
+          </button>
+          {showDropdown && (
+            <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50">
+              <button
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={handleViewProfile}
+              >
+                View Profile
+              </button>
+              <button
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={handleContact}
+              >
+                Contact
+              </button>
+              <button
+                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                onClick={handleLogoutModal}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
     ),
   };
 
@@ -151,6 +155,7 @@ const Home = () => {
           authActions={authActions}
           isMenuOpen={isMenuOpen}
           setIsMenuOpen={setIsMenuOpen}
+          setIsModalOpen={setIsModalOpen}
         />
 
         {/* Logout Modal */}

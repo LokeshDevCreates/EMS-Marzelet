@@ -11,7 +11,7 @@ const fetchAllEvents = async () => {
   return data;
 };
 
-const Events = ({ location,authActions, isMenuOpen, setIsMenuOpen }) => {
+const Events = ({ location,authActions, isMenuOpen, setIsMenuOpen , setIsModalOpen }) => {
   const [activeTab, setActiveTab] = useState("Exclusive Events");
   const [searchText, setSearchText] = useState("");
   const [allEvents, setAllEvents] = useState([]);
@@ -57,12 +57,27 @@ const Events = ({ location,authActions, isMenuOpen, setIsMenuOpen }) => {
             Evento
           </h1>
 
-          <button
-            className="text-3xl md:hidden text-gray-800"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? "✖" : "☰"}
-          </button>
+        {authActions.length === 1 && authActions[0].element ? (
+            <>
+              <div className="md:hidden">
+                {authActions[0].element}
+              </div>
+              <button
+                className="text-3xl md:hidden text-gray-800 ml-4"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? "✖" : "☰"}
+              </button>
+            </>
+          ) : (
+            <button
+              className="text-3xl md:hidden text-gray-800"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? "✖" : "☰"}
+            </button>
+          )}
+
 
           <div className="hidden md:flex items-center space-x-4 flex-grow mx-10 relative">
             <input
@@ -117,24 +132,62 @@ const Events = ({ location,authActions, isMenuOpen, setIsMenuOpen }) => {
           </div>
         </div>
 
-        {isMenuOpen && (
-          <nav className="md:hidden bg-[#E9F1FA] py-4 px-6">
-            <div className="flex flex-col items-center space-y-4">
-              {authActions.map((action, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    action.action();
-                  }}
-                  className="text-lg font-medium text-[#00ABE4] hover:underline"
-                >
-                  {action.name}
-                </button>
-              ))}
-            </div>
-          </nav>
-        )}
+       {isMenuOpen && (
+            <nav className="md:hidden bg-[#E9F1FA] py-4 px-6">
+              <div className="flex flex-col items-center space-y-4">
+                {authActions.map((action, index) => {
+                  if (typeof action === "object" && action.element) {
+                    // Render static fallback mobile buttons (don't re-use JSX element)
+                    return (
+                      <div key={`mobile-${index}`} className="flex flex-col items-center space-y-2">
+                        <button
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            console.log("Navigating to profile");
+                            navigate("/profile");
+                          }}
+                          className="text-lg font-medium text-[#00ABE4] hover:underline"
+                        >
+                          View Profile
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            navigate("/contact");
+                          }}
+                          className="text-lg font-medium text-[#00ABE4] hover:underline"
+                        >
+                          Contact
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            setIsModalOpen(true);
+                          }}
+                          className="text-lg font-medium text-red-600 hover:underline"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <button
+                        key={`mobile-button-${index}`}
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          action.action();
+                        }}
+                        className="text-lg font-medium text-[#00ABE4] hover:underline"
+                      >
+                        {action.name}
+                      </button>
+                    );
+                  }
+                })}
+              </div>
+            </nav>
+          )}
       </header>
 
       <section className="py-8 bg-[#E9F1FA]">

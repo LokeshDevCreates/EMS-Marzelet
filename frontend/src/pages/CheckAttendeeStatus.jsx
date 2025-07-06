@@ -10,7 +10,7 @@ const CheckAttendeeStatus = () => {
       const userEmail = localStorage.getItem("attendeeEmail");
 
       if (!userEmail) {
-        navigate("/login"); // ⛔ Not logged in
+        navigate("/login");
         return;
       }
 
@@ -22,7 +22,7 @@ const CheckAttendeeStatus = () => {
         if (response.status === 200 && response.data) {
           // ✅ Attendee exists, save ID and go to profile/dashboard
           localStorage.setItem("attendeeId", response.data._id);
-          navigate("/profile");
+          navigate("/");
         } else {
           navigate("/attendee-form");
         }
