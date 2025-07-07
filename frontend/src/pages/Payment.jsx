@@ -22,7 +22,7 @@ const Payment = () => {
     }
 
     try {
-      const orderRes = await axios.post("http://localhost:5000/api/payments/create-order", {
+      const orderRes = await axios.post(`${import.meta.env.VITE_API_URL}/api/payments/create-order`, {
         amount: booking.seats * booking.price * 100,
         receipt: booking._id,
         currency: "INR",
@@ -37,7 +37,7 @@ const Payment = () => {
         order_id: orderRes.data.id,
         handler: async (response) => {
           try {
-            const verifyRes = await axios.post("http://localhost:5000/api/payments/verify", {
+            const verifyRes = await axios.post(`${import.meta.env.VITE_API_URL}/api/payments/verify`, {
               ...response,
               bookingId: booking._id,
               eventId: booking.eventId

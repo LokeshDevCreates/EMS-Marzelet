@@ -19,7 +19,7 @@ const Bank = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/bank-details", bankDetails);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/bank-details`, bankDetails);
       toast.success(response.data.message);
     } catch (error) {
       toast.error(

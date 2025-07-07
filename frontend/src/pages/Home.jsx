@@ -42,7 +42,7 @@ const Home = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           fetch(
-            `http://localhost:5000/api/maps/geocode?lat=${latitude}&lng=${longitude}`
+            `${import.meta.env.VITE_API_URL}/api/maps/geocode?lat=${latitude}&lng=${longitude}`
           )
             .then((response) => response.json())
             .catch((error) => console.error("Error fetching location:", error));

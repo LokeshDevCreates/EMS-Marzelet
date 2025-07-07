@@ -20,7 +20,7 @@ const EventDetails = () => {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/events/${eventId}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/events/${eventId}`);
         setEvent(response.data);
       } catch (error) {
         console.error("Error fetching event details:", error);
@@ -64,7 +64,7 @@ const EventDetails = () => {
 
     setIsChecking(true);
     try {
-      const response = await axios.post(`http://localhost:5000/api/bookings/${eventId}/book`, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/bookings/${eventId}/book`, {
         userId: user?._id,
         seats: requiredSeats,
       });
@@ -82,7 +82,7 @@ const EventDetails = () => {
           order_id: order.id,
           handler: async function (response) {
             try {
-              const verifyRes = await axios.post("http://localhost:5000/api/bookings/verify", {
+              const verifyRes = await axios.post(`${import.meta.env.VITE_API_URL}/api/bookings/verify`, {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,

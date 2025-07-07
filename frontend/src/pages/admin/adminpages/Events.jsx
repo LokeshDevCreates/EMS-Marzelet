@@ -27,7 +27,7 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/events");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/events`);
         setEvents(response.data);
         setFilteredEvents(response.data);
       } catch (error) {
@@ -42,7 +42,7 @@ const Events = () => {
   const handleAddEvent = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/events",
+        `${import.meta.env.VITE_API_URL}/api/events`,
         newEvent
       );
       setEvents([...events, response.data]);
@@ -71,7 +71,7 @@ const Events = () => {
   const handleUpdateEvent = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/events/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/events/${id}`,
         editEvent
       );
       setEvents(
@@ -95,7 +95,7 @@ const Events = () => {
   // Confirm deletion
   const handleDeleteEvent = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/events/${deleteConfirmId}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/events/${deleteConfirmId}`);
       const updatedEvents = events.filter((evt) => evt._id !== deleteConfirmId);
       setEvents(updatedEvents);
       setFilteredEvents(updatedEvents);

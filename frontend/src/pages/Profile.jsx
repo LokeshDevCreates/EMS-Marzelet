@@ -18,7 +18,7 @@ const Profile = () => {
 
     const fetchAttendee = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/attendees/${attendeeId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendees/${attendeeId}`);
         setAttendee(res.data);
       } catch (err) {
         setError('Failed to load profile');
@@ -58,7 +58,7 @@ const Profile = () => {
           <img
             src={
               attendee.profileImage
-                ? `http://localhost:5000/${attendee.profileImage}`
+                ? `${import.meta.env.VITE_API_URL}/${attendee.profileImage}`
                 : '/default-avatar.png'
             }
             alt="Attendee Avatar"

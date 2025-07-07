@@ -16,7 +16,7 @@ const CheckAttendeeStatus = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/attendees/by-email/${userEmail}`
+          `${import.meta.env.VITE_API_URL}/api/attendees/by-email/${userEmail}`
         );
 
         if (response.status === 200 && response.data) {

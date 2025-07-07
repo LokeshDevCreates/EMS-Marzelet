@@ -49,12 +49,12 @@ const AttendeeForm = () => {
         }
       }
 
-      await axios.post('http://localhost:5000/api/attendees/register', formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/attendees/register`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       // 🟢 Get full attendee data by email
-      const response = await axios.get(`http://localhost:5000/api/attendees/by-email/${data.email}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendees/by-email/${data.email}`);
 
       localStorage.setItem('attendeeId', response.data._id);
 

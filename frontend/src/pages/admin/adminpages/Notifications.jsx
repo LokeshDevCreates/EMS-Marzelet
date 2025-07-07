@@ -9,7 +9,7 @@ const Notifications = () => {
     // Fetch all stored notifications from the backend
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/notifications");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/notifications`);
         setNotifications(response.data);
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
@@ -19,7 +19,7 @@ const Notifications = () => {
     fetchNotifications();
 
     // Connect to Socket.IO server for real-time updates
-    const socket = io("http://localhost:5000");
+    const socket = io(`${import.meta.env.VITE_API_URL}`);
 
     socket.on("notification", (data) => {
       setNotifications((prevNotifications) => {

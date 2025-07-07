@@ -9,12 +9,12 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [notificationCount, setNotificationCount] = useState(0);
-
+  
   useEffect(() => {
     // Fetch unread count on load
     const fetchUnreadCount = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/notifications/unread-count");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/notifications/unread-count`);
         setNotificationCount(response.data.unreadCount);
       } catch (error) {
         console.error("Failed to fetch unread count:", error);
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
     fetchUnreadCount();
 
     // Set up real-time updates using socket.io
-    const socket = io("http://localhost:5000");
+    const socket = io(`${import.meta.env.VITE_API_URL}`);
     socket.on("notification", () => {
       setNotificationCount((prevCount) => prevCount + 1);
     });
@@ -37,7 +37,7 @@ const AdminDashboard = () => {
     const markNotificationsAsRead = async () => {
       if (location.pathname === "/admin-dashboard/notifications") {
         try {
-          await axios.put("http://localhost:5000/api/notifications/mark-as-read");
+          await axios.put(`${import.meta.env.VITE_API_URL}/api/notifications/mark-as-read`);
           setNotificationCount(0); // Immediately reset the count
         } catch (error) {
           console.error("Failed to mark notifications as read:", error);

@@ -9,7 +9,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/users');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`);
         setUsers(response.data);
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -22,7 +22,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchOrganizers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/organizers');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/organizers`);
         setOrganizers(response.data);
       } catch (error) {
         console.error('Error fetching organizers:', error);
@@ -35,7 +35,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/bookings');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookings`);
         setBookings(response.data);
       } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -48,7 +48,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/events');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/events`);
         setEvents(response.data);
       } catch (error) {
         console.error('Error fetching events:', error);

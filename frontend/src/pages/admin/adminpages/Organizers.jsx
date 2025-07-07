@@ -21,7 +21,7 @@ const Organizers = () => {
   useEffect(() => {
     const fetchOrganizers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/organizers");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/organizers`);
         setOrganizers(response.data);
         setFilteredOrganizers(response.data);
       } catch (error) {
@@ -36,7 +36,7 @@ const Organizers = () => {
   const handleAddOrganizer = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/organizers/register",
+        `${import.meta.env.VITE_API_URL}/api/organizers/register`,
         newOrganizer
       );
       setOrganizers([...organizers, response.data]);
@@ -54,7 +54,7 @@ const Organizers = () => {
   const handleUpdateOrganizer = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/organizers/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/organizers/${id}`,
         editOrganizer
       );
       setOrganizers(
@@ -78,7 +78,7 @@ const Organizers = () => {
   // Confirm deletion
   const handleDeleteOrganizer = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/organizers/${deleteConfirmId}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/organizers/${deleteConfirmId}`);
       const updatedOrganizers = organizers.filter((org) => org._id !== deleteConfirmId);
       setOrganizers(updatedOrganizers);
       setFilteredOrganizers(updatedOrganizers);

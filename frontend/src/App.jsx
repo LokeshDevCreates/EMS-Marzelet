@@ -1,4 +1,4 @@
-import React from "react";
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
 
@@ -24,8 +24,6 @@ import ShowEvents from "./pages/organizer/organizerPages/ShowEvents";
 import CheckOrganizerStatus from "./pages/organizer/organizerPages/CheckOrganizerStatus";
 import CheckAttendeeStatus from "./pages/CheckAttendeeStatus"
 import OrganizerSettings from "./pages/organizer/organizerPages/OrganizerSettings"
-// Attendee Dashboard
-import AttendeeDashboard from "./pages/attendee/AttendeeDashboard";
 
 // Admin Dashboard and Nested Pages
 import AdminDashboard from "./pages/admin/adminpages/AdminDashboard";
@@ -81,16 +79,6 @@ const App = () => {
             <Route path="settings" element={<OrganizerSettings />} />
             <Route path="bank-details" element={<OrganizerBankDetails />} />
           </Route>
-
-          {/* Attendee Dashboard */}
-          <Route
-            path="/attendee-dashboard"
-            element={
-              <ProtectedRoute allowedRoles={["Attendee"]}>
-                <AttendeeDashboard />
-              </ProtectedRoute>
-            }
-          />
 
           {/* Admin Dashboard with Nested Routes */}
           <Route
