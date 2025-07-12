@@ -16,7 +16,7 @@ const CheckOrganizerStatus = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/organizers/from-user/${userEmail}`
+          `${import.meta.env.VITE_API_URL}/api/organizers/from-user/${userEmail}`
         );
 
         if (response.data.exists) {

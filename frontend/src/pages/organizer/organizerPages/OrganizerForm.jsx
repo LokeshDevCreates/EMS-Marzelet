@@ -44,12 +44,12 @@ const OrganizerForm = () => {
         }
       }
 
-      await axios.post('http://localhost:5000/api/organizers/register', formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/organizers/register`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       // 🟢 Fetch organizer by email to get full data
-      const response = await axios.get(`http://localhost:5000/api/organizers/by-user/${data.email}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/organizers/by-user/${data.email}`);
       const organizerId = response.data._id;
 
       // ✅ Save organizer ID to localStorage

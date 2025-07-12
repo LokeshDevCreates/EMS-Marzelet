@@ -24,7 +24,7 @@ const BookingViewer = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/events/organizer/${orgId}`
+          `${import.meta.env.VITE_API_URL}/api/events/organizer/${orgId}`
         );
         setEvents(response.data.events || []);
       } catch (err) {
@@ -45,7 +45,7 @@ const BookingViewer = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/bookings/organizer/${organizerId}/bookings`
+          `${import.meta.env.VITE_API_URL}/api/bookings/organizer/${organizerId}/bookings`
         );
         setBookings(response.data.bookings || []);
       } catch (err) {

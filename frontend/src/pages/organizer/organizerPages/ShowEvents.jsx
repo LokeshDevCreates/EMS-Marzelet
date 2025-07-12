@@ -6,7 +6,7 @@ import UnforgettableParties from "../../../components/UnforgettabaleParties";
 import Sports from "../../../components/Sports"
 import Footer from "../../../components/Footer"
 const fetchAllEvents = async () => {
-  const res = await fetch("http://localhost:5000/api/events");
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
   const data = await res.json();
   return data;
 };
@@ -27,7 +27,7 @@ const Events = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          fetch(`http://localhost:5000/api/maps/geocode?lat=${latitude}&lng=${longitude}`)
+          fetch(`${import.meta.env.VITE_API_URL}/api/maps/geocode?lat=${latitude}&lng=${longitude}`)
             .then((response) => response.json())
             .catch((error) => console.error("Error fetching location:", error));
         },

@@ -36,7 +36,7 @@ const OrganizerBankDetails = () => {
       }
 
       // 1. Submit bank details
-      await axios.post('http://localhost:5000/api/bank-details', {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/bank-details`, {
         ...formData,
         organizerId,
       });

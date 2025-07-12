@@ -40,8 +40,8 @@ const OrganizerDashboard = () => {
     const fetchData = async () => {
       try {
         const [eventsRes, bookingsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/events/organizer/${orgId}`),
-          axios.get(`http://localhost:5000/api/bookings/organizer/${organizerId}/bookings`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/events/organizer/${orgId}`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/bookings/organizer/${organizerId}/bookings`),
         ]);
         setEvents(eventsRes.data.events || []);
         setBookings(bookingsRes.data.bookings || []);

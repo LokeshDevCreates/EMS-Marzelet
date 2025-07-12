@@ -17,7 +17,7 @@ const OrganizerProfile = () => {
 
     const fetchOrganizer = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/organizers/${organizerId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/organizers/${organizerId}`);
         setOrganizer(res.data);
       } catch (err) {
         setError('Failed to load profile');
@@ -56,7 +56,7 @@ const OrganizerProfile = () => {
         <img
           src={
             organizer.profileImage
-              ? `http://localhost:5000/${organizer.profileImage}`
+              ? `${import.meta.env.VITE_API_URL}/${organizer.profileImage}`
               : '/default-avatar.png'
           }
           alt="Organizer Avatar"
