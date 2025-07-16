@@ -38,7 +38,7 @@ const Footer = () => {
                 <ul className="mt-4 space-y-2">
                   <li>
                     <Link
-                      to="https://marzelet.info/Components/Other-Contents/contactus/index.html"
+                      to="/contact"
                       className="hover:text-[#E9F1FA] transition-colors"
                     >
                       Help Center

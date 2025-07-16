@@ -12,6 +12,8 @@ import Contact from "./pages/Contact";
 import Payment from "./pages/Payment";
 import EventDetails from "./pages/EventDetails";
 import Bank from "./pages/Bank";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
 
 // Organizer Pages
 import OrganizerForm from "./pages/organizer/organizerPages/OrganizerForm";
@@ -23,7 +25,8 @@ import OrganizerProfile from "./pages/organizer/organizerPages/OrganzierProfile"
 import ShowEvents from "./pages/organizer/organizerPages/ShowEvents";
 import CheckOrganizerStatus from "./pages/organizer/organizerPages/CheckOrganizerStatus";
 import CheckAttendeeStatus from "./pages/CheckAttendeeStatus"
-import OrganizerSettings from "./pages/organizer/organizerPages/OrganizerSettings"
+import OrganizerSettings from "./pages/organizer/organizerPages/OrganizerSettings";
+
 
 // Admin Dashboard and Nested Pages
 import AdminDashboard from "./pages/admin/adminpages/AdminDashboard";
@@ -56,6 +59,8 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/bank" element={<Bank />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/events/:eventId" element={<EventDetails />} />
           <Route path="/attendee-check" element={<CheckAttendeeStatus />} />
           <Route path="/attendee-form" element={<AttendeeForm />} />
