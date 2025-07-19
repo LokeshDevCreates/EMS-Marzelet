@@ -87,7 +87,11 @@ router.post('/update-password', async (req, res) => {
     if (!user)
       return res.status(404).json({ message: "User not found" });
 
-    user.password = newPassword;
+    const bcrypt = require('bcryptjs');
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
     await user.save();
 
     res.json({ message: "Password updated successfully" });
@@ -96,6 +100,5 @@ router.post('/update-password', async (req, res) => {
     res.status(500).json({ message: "Server error while updating password" });
   }
 });
-
 
 module.exports = router;
