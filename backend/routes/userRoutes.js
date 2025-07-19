@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/Users');  // make sure you import your User model here!
 const { registerUser, loginUser } = require('../controllers/userController');
+const nodemailer = require('nodemailer');
+
 
 // POST /api/users/register
 router.post('/register', registerUser);
@@ -34,5 +36,42 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Server error while fetching users' });
   }
 });
+// POST /api/users/reset-password
+router.post('/reset-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: 'Email is required' });
 
+  try {
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: 'No user found with that email' });
+
+    // Setup your transporter (example with Gmail - adjust as needed)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER, // Your Gmail or SMTP email
+        pass: process.env.EMAIL_PASS, // App password
+      },
+    });
+
+    const resetLink = `${process.env.APPLICATION_URL}/reset-password?email=${email}`;
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset Request',
+      html: `<p>Hi ${user.name || ''},</p>
+             <p>Click the link below to reset your password:</p>
+             <a href="${resetLink}">${resetLink}</a>
+             <p>If you didn't request this, please ignore this email.</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: 'Password reset email sent' });
+  } catch (err) {
+    console.error('Email error:', err);
+    res.status(500).json({ message: 'Failed to send reset email' });
+  }
+});
 module.exports = router;
