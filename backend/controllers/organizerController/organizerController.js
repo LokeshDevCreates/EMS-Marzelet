@@ -14,7 +14,7 @@ const generateOrganizerId = async () => {
   return `OG${newId}`;
 };
 
-// ✅ Organizer Registration
+// ✅ Register Organizer
 exports.registerOrganizer = async (req, res) => {
   try {
     const {
@@ -28,25 +28,23 @@ exports.registerOrganizer = async (req, res) => {
       description
     } = req.body;
 
-    // Validate phone number
+    // Validate phone
     if (!/^\d{10}$/.test(phone)) {
       return res.status(400).json({ message: 'Phone number must be 10 digits' });
     }
 
-    // Check if email already registered
+    // Check existing email
     const existing = await Organizer.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Generate custom Organizer ID
+    // Generate ID
     const customOrganizerId = await generateOrganizerId();
 
-    // Handle profile image if uploaded
+    // Get profile image
     const profileImage = req.files?.profileImage?.[0]?.path.replace(/\\/g, '/') || null;
 
-
-    // Create new organizer
     const newOrganizer = new Organizer({
       customOrganizerId,
       name,
@@ -60,9 +58,7 @@ exports.registerOrganizer = async (req, res) => {
       profileImage,
     });
 
-    const saved = await newOrganizer.save();
-
-    // Send confirmation email
+    await newOrganizer.save();
     await sendEmail(email, customOrganizerId);
 
     res.status(201).json({
@@ -70,17 +66,9 @@ exports.registerOrganizer = async (req, res) => {
       organizerId: customOrganizerId,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      message: 'Registration failed',
-      error: err.message,
-    });
+    console.error('Registration error:', err);
+    res.status(500).json({ message: 'Registration failed', error: err.message });
   }
-};
-
-// ✅ Organizer Login (Optional — leave as is if not used)
-exports.loginOrganizer = async (req, res) => {
-  res.status(501).json({ message: 'Login disabled. Password is not required.' });
 };
 
 // ✅ Get Organizer by ID
@@ -112,8 +100,10 @@ exports.getAllOrganizers = async (req, res) => {
 exports.updateOrganizer = async (req, res) => {
   try {
     const { id } = req.params;
+
     const {
       name,
+      age,
       email,
       phone,
       organizationType,
@@ -122,34 +112,31 @@ exports.updateOrganizer = async (req, res) => {
       description
     } = req.body;
 
-    const updatedOrganizer = await Organizer.findByIdAndUpdate(
-      id,
-      { name, email, phone, organizationType, organizationName, profession, description },
-      { new: true }
-    );
+    const profileImage = req.file ? req.file.path.replace(/\\/g, '/') : undefined;
 
-    if (!updatedOrganizer) {
+    const updateData = {
+      name,
+      age: Number(age),
+      email,
+      phone,
+      organizationType,
+      organizationName,
+      profession,
+      description,
+    };
+
+    if (profileImage) updateData.profileImage = profileImage;
+
+    const updated = await Organizer.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updated) {
       return res.status(404).json({ message: 'Organizer not found' });
     }
 
-    res.status(200).json(updatedOrganizer);
+    res.status(200).json(updated);
   } catch (err) {
-    console.error('Error updating organizer:', err);
-    res.status(500).json({ message: 'Failed to update organizer', error: err.message });
-  }
-};
-// ✅ Check Organizer By Email
-exports.checkOrganizerByEmail = async (req, res) => {
-  try {
-    const { email } = req.params;
-    const organizer = await Organizer.findOne({ email });
-    if (!organizer) {
-      return res.status(404).json({ exists: false });
-    }
-    res.status(200).json({ exists: true });
-  } catch (err) {
-    console.error('Error checking organizer by email:', err);
-    res.status(500).json({ message: 'Error checking email', error: err.message });
+    console.error('Update error:', err);
+    res.status(500).json({ message: 'Update failed', error: err.message });
   }
 };
 
@@ -158,29 +145,47 @@ exports.deleteOrganizer = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedOrganizer = await Organizer.findByIdAndDelete(id);
+    const deleted = await Organizer.findByIdAndDelete(id);
 
-    if (!deletedOrganizer) {
+    if (!deleted) {
       return res.status(404).json({ message: 'Organizer not found' });
     }
 
     res.status(200).json({ message: 'Organizer deleted successfully' });
   } catch (err) {
-    console.error('Error deleting organizer:', err);
-    res.status(500).json({ message: 'Failed to delete organizer', error: err.message });
+    console.error('Delete error:', err);
+    res.status(500).json({ message: 'Deletion failed', error: err.message });
   }
 };
-// ✅ Get Organizer by Email (for storing ID after registration)
+
+// ✅ Get Organizer by Email (for full profile)
 exports.getOrganizerByEmail = async (req, res) => {
   try {
     const { email } = req.params;
     const organizer = await Organizer.findOne({ email });
     if (!organizer) {
-      return res.status(404).json({ message: "Organizer not found" });
+      return res.status(404).json({ message: 'Organizer not found' });
     }
-    res.status(200).json(organizer); // return full organizer
+    res.status(200).json(organizer);
   } catch (err) {
-    console.error("Error checking organizer by email:", err);
-    res.status(500).json({ message: "Error checking email", error: err.message });
+    console.error('Email fetch error:', err);
+    res.status(500).json({ message: 'Error fetching organizer', error: err.message });
   }
+};
+
+// ✅ Check if Organizer exists by Email (true/false)
+exports.checkOrganizerByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const exists = await Organizer.exists({ email });
+    res.status(200).json({ exists: !!exists });
+  } catch (err) {
+    console.error('Email check error:', err);
+    res.status(500).json({ message: 'Error checking email', error: err.message });
+  }
+};
+
+// ✅ Organizer Login — Disabled (optional)
+exports.loginOrganizer = (req, res) => {
+  res.status(501).json({ message: 'Login disabled. Password is not required.' });
 };

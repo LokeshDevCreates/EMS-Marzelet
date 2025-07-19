@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signOut, sendPasswordResetEmail } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { useUser } from "../../../context/UserContext.jsx";
 import { auth } from "../../../../firebase.js";
 import Footer from "../../../components/Footer";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+import "react-toastify/dist/ReactToastify.css";
 
 const OrganizerSettings = () => {
   const { user, logout } = useUser();
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [resetEmail] = useState(user?.email || "");
 
   const handleLogout = () => {
     signOut(auth)
@@ -18,22 +23,106 @@ const OrganizerSettings = () => {
       })
       .catch((error) => {
         console.error("Logout error:", error);
-        alert("Failed to logout. Please try again.");
+        toast.error("Failed to logout.");
       });
   };
 
-  const handleChangePassword = () => {
-    sendPasswordResetEmail(auth, user.email)
-      .then(() => {
-        alert("Password reset email sent! Please check your inbox.");
-      })
-      .catch((error) => {
-        console.error("Password reset error:", error);
-        alert("Failed to send reset email. Please try again.");
+  const handlePasswordReset = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Reset failed");
+      }
+
+      toast.success("Password reset email sent! Check your inbox.");
+      setIsResetModalOpen(false);
+    } catch (error) {
+      console.error("Reset error:", error);
+      toast.error(error.message);
+    }
   };
 
-  const closeModal = () => setIsModalOpen(false);
+  const downloadCSV = async () => {
+    try {
+      const organizerId = localStorage.getItem("organizerId");
+
+      const [eventsRes, bookingsRes] = await Promise.all([
+        axios.get(`${import.meta.env.VITE_API_URL}/api/events/organizer/${organizerId}`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/bookings/organizer/${organizerId}/bookings`)
+      ]);
+
+      const events = eventsRes.data.events || [];
+      const bookings = bookingsRes.data.bookings || [];
+
+      const rows = bookings.length
+        ? bookings.map(booking => {
+            const event = events.find(e => e._id === booking.eventId?._id);
+            return {
+              "Event Name": event?.name || "N/A",
+              "Event Date": event?.date || "N/A",
+              "Start Time": event?.startTime || "N/A",
+              "End Time": event?.endTime || "N/A",
+              "Attendee Name": booking.userId?.name || "N/A",
+              "Attendee Email": booking.userId?.email || "N/A",
+              "Seats Booked": booking.seats || 0,
+              "Amount Paid": booking.amountPaid || 0,
+              "Payment ID": booking.paymentId || "N/A",
+              "Booking Time": new Date(booking.createdAt).toLocaleString(),
+            };
+          })
+        : events.map(event => ({
+            "Event Name": event.name || "N/A",
+            "Event Date": event.date || "N/A",
+            "Start Time": event.startTime || "N/A",
+            "End Time": event.endTime || "N/A",
+            "Attendee Name": "N/A",
+            "Attendee Email": "N/A",
+            "Seats Booked": 0,
+            "Amount Paid": 0,
+            "Payment ID": "N/A",
+            "Booking Time": "N/A"
+          }));
+
+      if (!rows.length) {
+        toast.info("No events or bookings to export.");
+        return;
+      }
+
+      const csvContent = convertToCSV(rows);
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "event_bookings.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("CSV downloaded successfully!");
+    } catch (error) {
+      console.error("CSV Download Error:", error);
+      toast.error("Failed to download CSV.");
+    }
+  };
+
+  const convertToCSV = (data) => {
+    if (!data.length) return "";
+    const headers = Object.keys(data[0]);
+    const csvRows = [
+      headers.join(","),
+      ...data.map(row =>
+        headers.map(field => `"${String(row[field]).replace(/"/g, '""')}"`).join(",")
+      )
+    ];
+    return csvRows.join("\n");
+  };
 
   if (!user) {
     navigate("/");
@@ -42,120 +131,102 @@ const OrganizerSettings = () => {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto mt-24 mb-32 p-6 bg-white shadow-2xl rounded-2xl relative">
-        {/* Top Right Buttons */}
-        <div className="absolute top-4 right-4 flex gap-3">
-          <button
-            onClick={handleChangePassword}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm"
-          >
-            Change Password
-          </button>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm"
-          >
-            Logout
-          </button>
-        </div>
+      <ToastContainer />
 
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">
-          Organizer Settings
-        </h2>
+      {/* Top Bar with Logout */}
+      <div className="flex justify-end px-6 pt-6">
+        <button
+          onClick={() => setIsLogoutModalOpen(true)}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm"
+        >
+          Logout
+        </button>
+      </div>
 
-        <div className="text-gray-700 space-y-2 mb-10">
-          <p>
-            <span className="font-medium">Email:</span> {user.email}
-          </p>
-          <p>
-            <span className="font-medium">Role:</span> {user.role || "Organizer"}
-          </p>
-        </div>
+      <div className="max-w-3xl mx-auto mt-6 mb-32 p-6 bg-white shadow-2xl rounded-2xl">
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Organizer Settings</h2>
+        <p className="text-gray-600 mb-6">
+          Manage your account settings, download event reports, and change your password.
+        </p>
 
-        <div className="space-y-6">
-          {/* 📍 Default Event Location */}
-          <div>
-            <label className="block font-medium mb-1">
-              📍 Set Default Event Location
-            </label>
-            <input
-              type="text"
-              placeholder="Enter default location"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
+        <div className="bg-gray-50 rounded-xl p-4 space-y-6 border">
+          {/* Account Info */}
+          <div className="space-y-1">
+            <p className="text-lg text-gray-800 font-medium">Account Information</p>
+            <p><span className="font-semibold">Email:</span> {user.email}</p>
+            <p><span className="font-semibold">Role:</span> {user.role || "Organizer"}</p>
           </div>
 
-          {/* 🔁 Auto-Repeat */}
-          <div className="flex items-center gap-3">
-            <label className="font-medium">🔁 Enable Auto-Repeat for Events</label>
-            <input type="checkbox" className="toggle toggle-primary" />
-          </div>
-
-          {/* 📦 Export Booking Reports */}
+          {/* Download CSV */}
           <div>
-            <label className="block font-medium mb-1">
-              📦 Export Booking Reports
-            </label>
-            <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
-              Export as CSV
+            <h3 className="text-lg font-semibold text-gray-800">Download Event Bookings</h3>
+            <p className="text-gray-600 mb-2 text-sm">
+              Export your event data into a CSV file for reporting, accounting, or record-keeping purposes.
+            </p>
+            <button
+              onClick={downloadCSV}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm"
+            >
+              Download CSV
             </button>
           </div>
 
-          {/* 🧾 Invoice Settings */}
+          {/* Change Password */}
           <div>
-            <label className="block font-medium mb-1">🧾 Invoice Settings</label>
-            <input
-              type="text"
-              placeholder="GSTIN / Organization Address"
-              className="w-full p-2 border border-gray-300 rounded-lg mb-2"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              className="block w-full"
-            />
-          </div>
-
-          {/* ⏱ Booking Window Limit */}
-          <div>
-            <label className="block font-medium mb-1">
-              ⏱ Booking Window Limit (in days)
-            </label>
-            <input
-              type="number"
-              min="1"
-              placeholder="e.g. 30"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          {/* 📑 Custom Booking Policy */}
-          <div>
-            <label className="block font-medium mb-1">
-              📑 Set Custom Booking Policy
-            </label>
-            <textarea
-              rows="5"
-              placeholder="Enter cancellation, refund, and other policies..."
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            ></textarea>
+            <h3 className="text-lg font-semibold text-gray-800">Change Password</h3>
+            <p className="text-gray-600 mb-2 text-sm">
+              If you’d like to reset your password, click below. You’ll receive a reset link via email.
+            </p>
+            <button
+              onClick={() => setIsResetModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm"
+            >
+              Send Reset Email
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Logout Confirmation Modal */}
-      {isModalOpen && (
+      {/* 🔐 Reset Password Modal */}
+      {isResetModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center px-4">
+          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl w-full max-w-sm">
+            <h3 className="text-xl font-semibold text-blue-600 mb-4">Reset Password</h3>
+            <input
+              type="email"
+              value={resetEmail}
+              disabled
+              className="border w-full p-3 mb-4 rounded bg-gray-100 text-sm"
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={handlePasswordReset}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm"
+              >
+                Send Reset Email
+              </button>
+              <button
+                onClick={() => setIsResetModalOpen(false)}
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🚪 Logout Modal */}
+      {isLogoutModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-xl p-6 w-[90%] max-w-md animate-fade-in">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Confirm Logout
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Confirm Logout</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to logout? You will need to login again to access your dashboard.
+              Are you sure you want to logout? You’ll need to log in again to access your dashboard.
             </p>
             <div className="flex justify-end gap-4">
               <button
-                onClick={closeModal}
+                onClick={() => setIsLogoutModalOpen(false)}
                 className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg"
               >
                 Cancel

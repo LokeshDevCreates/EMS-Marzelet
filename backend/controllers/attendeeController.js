@@ -91,9 +91,17 @@ exports.updateAttendee = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    const profileImage = req.files?.profileImage?.[0]?.path.replace(/\\/g, '/') || undefined;
 
-    if (profileImage) updates.profileImage = profileImage;
+    // 1. Handle new uploaded image if present
+    const profileImage = req.files?.profileImage?.[0]?.path.replace(/\\/g, "/");
+
+    if (profileImage) {
+      updates.profileImage = profileImage;
+    } else if (req.body.existingImage) {
+      updates.profileImage = req.body.existingImage;
+    } else {
+      updates.profileImage = null; // fallback to null if image removed
+    }
 
     const updated = await Attendee.findByIdAndUpdate(id, updates, { new: true });
 
@@ -101,7 +109,7 @@ exports.updateAttendee = async (req, res) => {
 
     res.status(200).json(updated);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to update attendee', error: err.message });
+    res.status(500).json({ message: "Failed to update attendee", error: err.message });
   }
 };
 

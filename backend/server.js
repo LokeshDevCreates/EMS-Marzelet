@@ -20,7 +20,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.APPLICATION_URL, // Replace with your frontend URL
+    origin: process.env.APPLICATION_URL, 
     methods: ["GET", "POST"],
   },
 });
@@ -28,7 +28,8 @@ const io = new Server(server, {
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+// Parse URL-encoded form data
+app.use(express.urlencoded({ extended: true }));
 // Validate environment variables
 if (!process.env.MONGODB_URI) {
   console.error("MONGODB_URI is not set in the .env file");

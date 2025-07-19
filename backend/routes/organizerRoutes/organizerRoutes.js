@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const upload = require('../../middleware/upload');
 
 const {
   registerOrganizer,
@@ -10,32 +11,34 @@ const {
   getOrganizerById,
   checkOrganizerByEmail,
   getOrganizerByEmail
-} = require('../../controllers/organizerController/organizerController.js');
+} = require('../../controllers/organizerController/organizerController');
 
-const upload = require('../../middleware/upload.js');
-// routes/organizers.js or similar
-router.get('/by-user/:email', getOrganizerByEmail);
-router.get('/from-user/:email', checkOrganizerByEmail);
-// ✅ Registration with image upload
+// ✅ Register Organizer with image upload
 router.post(
   '/register',
   upload.fields([{ name: 'profileImage', maxCount: 1 }]),
   registerOrganizer
 );
 
-// ✅ Login (optional or disabled)
+// ✅ Login disabled (optional endpoint)
 router.post('/login', loginOrganizer);
 
-// ✅ Get organizer by ID
+// ✅ Get full organizer by email
+router.get('/by-user/:email', getOrganizerByEmail);
+
+// ✅ Check if email exists
+router.get('/from-user/:email', checkOrganizerByEmail);
+
+// ✅ Get Organizer by ID
 router.get('/:id', getOrganizerById);
 
-// ✅ Get all organizers
+// ✅ Get All Organizers
 router.get('/', getAllOrganizers);
 
-// ✅ Update organizer
-router.put('/:id', updateOrganizer);
+// ✅ Update Organizer
+router.put('/:id', upload.single('profileImage'), updateOrganizer);
 
-// ✅ Delete organizer
+// ✅ Delete Organizer
 router.delete('/:id', deleteOrganizer);
 
 module.exports = router;

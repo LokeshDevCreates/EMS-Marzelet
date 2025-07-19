@@ -89,23 +89,58 @@ const verifyAndStoreBooking = async (req, res) => {
 
 const getBookingsByOrganizer = async (req, res) => {
   try {
-    const organizerId = req.params.organizerId;
+    const organizerId = req.params.id;
 
-    // Step 1: Find all events created by the organizer
-    const events = await Event.find({ organizerId }).select("_id");
-    const eventIds = events.map(event => event._id);
+    const events = await Event.find({ organizerId });
 
-    // Step 2: Find bookings for those events
-    const bookings = await Booking.find({ eventId: { $in: eventIds } })
-      .populate("userId")
-      .populate("eventId");
+    const bookingsWithEvents = await Promise.all(
+      events.map(async (event) => {
+        const bookings = await Booking.find({ eventId: event._id }).populate("userId");
 
-    res.json({ success: true, bookings });
+        const formatted = bookings.map((booking) => ({
+          eventId: event._id,
+          eventName: event.name,
+          eventDate: event.date,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          userId: booking.userId || null,
+          attendeeName: booking.userId?.name || "N/A",
+          attendeeEmail: booking.userId?.email || "N/A",
+          numSeats: booking.seats,
+          bookingAmount: booking.amountPaid,
+          paymentId: booking.paymentId,
+          createdAt: booking.createdAt
+        }));
+
+        if (formatted.length === 0) {
+          return [{
+            eventId: event._id,
+            eventName: event.name,
+            eventDate: event.date,
+            startTime: event.startTime,
+            endTime: event.endTime,
+            userId: null,
+            attendeeName: "-",
+            attendeeEmail: "-",
+            numSeats: 0,
+            bookingAmount: 0,
+            paymentId: "-",
+            createdAt: new Date()
+          }];
+        }
+
+        return formatted;
+      })
+    );
+
+    const flatList = bookingsWithEvents.flat();
+    res.status(200).json({ bookings: flatList });
   } catch (err) {
-    console.error("Error fetching bookings by organizer:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Error in getBookingsForOrganizerWithEvents:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 module.exports = {
