@@ -14,6 +14,7 @@ import EventDetails from "./pages/EventDetails";
 import Bank from "./pages/Bank";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
+import ResetPassword from "./pages/ResetPassword";
 
 // Organizer Pages
 import OrganizerForm from "./pages/organizer/organizerPages/OrganizerForm";
@@ -61,6 +62,7 @@ const App = () => {
           <Route path="/bank" element={<Bank />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/events/:eventId" element={<EventDetails />} />
           <Route path="/attendee-check" element={<CheckAttendeeStatus />} />
           <Route path="/attendee-form" element={<AttendeeForm />} />
